@@ -202,9 +202,8 @@ let noCudaCmlxExcludes = [
                 "mlx/mlx/backend/cpu/gemms/bnns.cpp",  // macOS Accelerate version
                 "mlx-conditional",
                 "mlx-c/mlx/c/metal.cpp",
-
-                "mlx-c/mlx/c/fast.cpp",  // Exclude on Linux - calls metal_kernel unconditionally
-
+                // mlx-c/mlx/c/fast.cpp builds here: its metal_kernel and cuda_kernel calls
+                // resolve to the throwing stubs in no_metal.cpp and no_cuda.cpp.
             ] + noMetalCmlxExcludes + noCudaCmlxExcludes
 
         cxxSettings = []
@@ -220,8 +219,6 @@ let noCudaCmlxExcludes = [
             "GPU+Metal.swift",
             "GPU+CUDA.swift",
             "MLXArray+Metal.swift",
-            "MLXFast.swift",
-            "MLXFastKernel.swift",
         ]
     }
 #else
