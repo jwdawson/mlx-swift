@@ -4,6 +4,7 @@
 #include "utils.h"
 #include "sdpa_blocked.h"
 #include "sdpa_vector.h"
+#include "sdpa_vector_mma.h"
 
 using namespace metal;
 
@@ -92,4 +93,24 @@ instantiate_sdpa_vector_heads(float16_t)
 instantiate_sdpa_vector_tk1(bfloat16_t, 256)
 instantiate_sdpa_vector_tk1(float, 192)
 instantiate_sdpa_vector_tk1(float, 256)
+#define instantiate_sdpa_vector_mma_wm(type, dim, wm)                \
+  instantiate_kernel(                                                \
+      "sdpa_vector_2pass_1_mma_" #type "_" #dim "_" #dim "_wm" #wm, \
+      sdpa_vector_2pass_1_mma,                                       \
+      type,                                                          \
+      dim,                                                           \
+      dim,                                                           \
+      wm)
+
+#define instantiate_sdpa_vector_mma(type, dim)  \
+  instantiate_sdpa_vector_mma_wm(type, dim, 1) \
+  instantiate_sdpa_vector_mma_wm(type, dim, 2) \
+  instantiate_sdpa_vector_mma_wm(type, dim, 4)
+
+instantiate_sdpa_vector_mma(bfloat16_t, 64)
+instantiate_sdpa_vector_mma(bfloat16_t, 128)
+instantiate_sdpa_vector_mma(bfloat16_t, 256)
+instantiate_sdpa_vector_mma(float16_t, 64)
+instantiate_sdpa_vector_mma(float16_t, 128)
+instantiate_sdpa_vector_mma(float16_t, 256)
 // clang-format on
